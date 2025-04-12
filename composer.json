@@ -1,0 +1,18 @@
+{
+    "name": "hejunjie/mobile-locator",
+    "description": "基于国内号段规则的手机号码归属地查询库，支持运营商识别与地区定位，适用于注册验证、用户画像、数据归档等场景。",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Hejunjie\\MobileLocator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "何俊杰",
+            "email": "junjie.he.925@gmail.com"
+        }
+    ],
+    "require": {}
+}
