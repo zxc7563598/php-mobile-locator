@@ -2,15 +2,13 @@
 
 namespace Hejunjie\MobileLocator;
 
-use RuntimeException;
-
 class MobileLocator
 {
     private static $instance = null;    // 单例实例
     private $cache = [];                // 查询缓存
 
     /**
-     * 获取完整现行地区数据
+     * 获取完整数据
      * 
      * @return array 
      */
