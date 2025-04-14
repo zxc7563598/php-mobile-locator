@@ -1,0 +1,15 @@
+name: Assign Issue to Myself
+
+on:
+  issues:
+    types: [opened]  # 只对新开的 issue 触发
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign issue to me
+        uses: peter-evans/assign-issue@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          assignees: 'zxc7563598'
