@@ -1,8 +1,12 @@
+# 自动将新开的 issue 分配给自己
 name: Assign Issue to Myself
 
 on:
   issues:
-    types: [opened]  # 只对新开的 issue 触发
+    types: [opened]
+
+permissions:
+  issues: write
 
 jobs:
   assign:
