@@ -1,6 +1,6 @@
 {
     "name": "hejunjie/mobile-locator",
-    "description": "基于国内号段规则的手机号码归属地查询库，支持运营商识别与地区定位，适用于注册验证、用户画像、数据归档等场景。",
+    "description": "A mobile number lookup library based on Chinese carrier rules. Identifies carriers and regions, suitable for registration checks, user profiling, and data archiving.",
     "license": "MIT",
     "type": "library",
     "autoload": {

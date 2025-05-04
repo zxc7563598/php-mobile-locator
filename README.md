@@ -1,94 +1,105 @@
 # hejunjie/mobile-locator
 
-这是我自己整理的一份手机号码归属地数据包，基于国内号段规则来查询手机号码所属的位置和运营商信息。数据会定期更新，就像我维护的其他数据仓库一样。
+<div align="center">
+  <a href="./README.md">English</a>｜<a href="./README.zh-CN.md">简体中文</a>
+  <hr width="50%"/>
+</div>
 
-简单来说，就是把那些繁琐的号段归属信息整合到一个 JSON 文件里，让你能方便地查询和使用。
+A mobile number lookup library based on Chinese carrier rules. Identifies carriers and regions, suitable for registration checks, user profiling, and data archiving.
 
-如果你不想要部署，只是想要进行使用，可以 👉 [点击此处进行使用](https://tools.hejunjie.life/#/external/mobile-locator)
+> Current data entries: 481,615
 
-支持批量查询
+---
 
-## 安装方式
+This is a mobile number attribution dataset I compiled myself. It allows you to look up the location and carrier information of Chinese mobile numbers based on segment rules. Just like my other data repositories, this one is regularly updated.
+
+In short, it consolidates all those scattered and complicated segment details into a single, easy-to-use JSON file—making lookups fast and straightforward.
+
+If you don’t want to deploy anything and just want to use it directly, you can 👉 [click here to use it](https://tools.hejunjie.life/#/external/mobile-locator).
+
+Bulk lookup is supported.
+
+## Installation
+
+Install via Composer:
 
 ```bash
 composer require hejunjie/mobile-locator
 ```
 
-## 包含的数据文件
+## Included Data Files
 
-`data.json`：全部数据，共计 481,615 个号段
+`data.json`：All data, with a total of **481,615** number segments.
 
-都可以直接引入 JSON 文件来处理，结构比较清晰，拿来用就行。
+You can directly import the JSON file for processing. The structure is clear, so you can use it right away.
 
-## 使用方式
+## Usage
 
-我写了一个简单的辅助类 MobileLocator 来方便获取数据和常用处理：
+I wrote a simple helper class `MobileLocator` to make it easier to access the data and perform common processing.：
 
 ```php
 <?php
 use Hejunjie\MobileLocator\MobileLocator;
 
-// 获取全部数据
+// Retrieve all data.
 $data = MobileLocator::getData();
 ```
 
-另外也提供了一些常用的方法，直接可以拿来用，但如果你对性能有要求，强烈建议对数据进行缓存后自行实现
+Additionally, I provide some commonly used methods that you can use directly. However, if you have performance requirements, I strongly recommend caching the data and implementing it yourself.
 
 ```php
 <?php
 use Hejunjie\MobileLocator\MobileLocator;
 
-// 根据手机号获取运营商信息
+// Get carrier information based on the phone number.
 $info = MobileLocator::getCarrierInfo('16601750925');
 ```
 
-## 更新说明
+## Update Notes
 
-数据会定期更新，保证你拿到的都是最新的信息。如果你发现有遗漏或者数据不准确，欢迎提 Issue 或 PR，一起完善！
+The data is regularly updated to ensure you always get the latest information. If you notice any missing or inaccurate data, feel free to open an Issue or PR to help improve it together!
 
-## 用途 & 初衷
+## Purpose & Motivation
 
-最开始只是想在项目里简单查一下手机号归属地，网上的开源库很多年不更新，要么依赖第三方 API，要么接口限速，要么就得用老旧的 .dat 文件。
+It all started with a simple need: I just wanted to check a phone number's carrier and location in a project.
 
-我就干脆自己搞了一个：
-直接整理 最新号段数据，按省、市和运营商分类，支持通过手机号快速获取归属地信息，数据是定期更新的，库也尽量保持简单实用，毕竟我就是为了自己用得方便才写的 😅
+Most open-source libraries I found were outdated, relied on third-party APIs, had rate limits, or used legacy .dat files.
 
-## 🔧 更多工具包（可独立使用，也可统一安装）
+So, I decided to build my own.
 
-本项目最初是从 [hejunjie/tools](https://github.com/zxc7563598/php-tools) 拆分而来，如果你想一次性安装所有功能组件，也可以使用统一包：
+This library is based on up-to-date number segment data, categorized by province, city, and carrier. It allows you to quickly look up phone number attribution with no external dependencies. The data is regularly updated, and the library is kept as simple and practical as possible—because honestly, I built it for my own convenience ❤️
+
+## 🔧 Additional Toolkits (Can be used independently or installed together)
+
+This project was originally extracted from [hejunjie/tools](https://github.com/zxc7563598/php-tools).
+To install all features in one go, feel free to use the all-in-one package:
 
 ```bash
 composer require hejunjie/tools
 ```
 
-当然你也可以按需选择安装以下功能模块：
+Alternatively, feel free to install only the modules you need：
 
-[hejunjie/cache](https://github.com/zxc7563598/php-cache) - 多层缓存系统，基于装饰器模式。
+[hejunjie/utils](https://github.com/zxc7563598/php-utils) - A lightweight and practical PHP utility library that offers a collection of commonly used helper functions for files, strings, arrays, and HTTP requests—designed to streamline development and support everyday PHP projects.
 
-[hejunjie/china-division](https://github.com/zxc7563598/php-china-division) - 中国省市区划分数据包。
+[hejunjie/cache](https://github.com/zxc7563598/php-cache) - A layered caching system built with the decorator pattern. Supports combining memory, file, local, and remote caches to improve hit rates and simplify cache logic.
 
-[hejunjie/error-log](https://github.com/zxc7563598/php-error-log) - 责任链日志上报系统。
+[hejunjie/china-division](https://github.com/zxc7563598/php-china-division) - Regularly updated dataset of China's administrative divisions with ID-card address parsing. Distributed via Composer and versioned for use in forms, validation, and address-related features
 
-[hejunjie/utils](https://github.com/zxc7563598/php-utils) - 常用工具方法集合。
+[hejunjie/error-log](https://github.com/zxc7563598/php-error-log) - An error logging component using the Chain of Responsibility pattern. Supports multiple output channels like local files, remote APIs, and console logs—ideal for flexible and scalable logging strategies.
 
-[hejunjie/address-parser](https://github.com/zxc7563598/php-address-parser) - 收货地址智能解析工具，支持从非结构化文本中提取用户/地址信息。
+[hejunjie/mobile-locator](https://github.com/zxc7563598/php-mobile-locator) - A mobile number lookup library based on Chinese carrier rules. Identifies carriers and regions, suitable for registration checks, user profiling, and data archiving.
 
-[hejunjie/url-signer](https://github.com/zxc7563598/php-url-signer) - URL 签名工具，支持对 URL 进行签名和验证。
+[hejunjie/address-parser](https://github.com/zxc7563598/php-address-parser) - An intelligent address parser that extracts name, phone number, ID number, region, and detailed address from unstructured text—perfect for e-commerce, logistics, and CRM systems.
 
-[hejunjie/google-authenticator](https://github.com/zxc7563598/php-google-authenticator) - Google Authenticator 及类似应用的密钥生成、二维码创建和 OTP 验证。
+[hejunjie/url-signer](https://github.com/zxc7563598/php-url-signer) - A PHP library for generating URLs with encryption and signature protection—useful for secure resource access and tamper-proof links.
 
-[hejunjie/simple-rule-engine](https://github.com/zxc7563598/php-simple-rule-engine) - 一个轻量、易用的 PHP 规则引擎，支持多条件组合、动态规则执行。
+[hejunjie/google-authenticator](https://github.com/zxc7563598/php-google-authenticator) - A PHP library for generating and verifying Time-Based One-Time Passwords (TOTP). Compatible with Google Authenticator and similar apps, with features like secret generation, QR code creation, and OTP verification.
 
-👀 所有包都遵循「轻量实用、解放双手」的原则，能单独用，也能组合用，自由度高，欢迎 star 🌟 或提 issue。
+[hejunjie/simple-rule-engine](https://github.com/zxc7563598/php-simple-rule-engine) - A lightweight and flexible PHP rule engine supporting complex conditions and dynamic rule execution—ideal for business logic evaluation and data validation.
+
+👀 All packages follow the principles of being lightweight and practical — designed to save you time and effort. They can be used individually or combined flexibly. Feel free to ⭐ star the project or open an issue anytime!
 
 ---
 
-该库后续将持续更新，添加更多实用功能。欢迎大家提供建议和反馈，我会根据大家的意见实现新的功能，共同提升开发效率。
-
-
-
-
-
-
-
-
+This library will continue to be updated with more practical features. Suggestions and feedback are always welcome — I’ll prioritize new functionality based on community input to help improve development efficiency together.
