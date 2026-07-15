@@ -1,0 +1,12 @@
+# 工具脚本和开发辅助文件，不随包分发
+/split_by_prefix.php export-ignore
+
+# CI / 开发配置
+/.github/ export-ignore
+/.claude/ export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+
+# 测试文件（如果有的话）
+/test.php export-ignore
+/tests/ export-ignore
