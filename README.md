@@ -1,107 +1,120 @@
 # hejunjie/mobile-locator
 
-<div align="center">
-  <a href="./README.md">English</a>｜<a href="./README.zh-CN.md">简体中文</a>
-  <hr width="50%"/>
-</div>
+English ｜ [简体中文](./README.zh-CN.md)
 
-A mobile number lookup library based on Chinese carrier rules. Identifies carriers and regions, suitable for registration checks, user profiling, and data archiving.
+A mobile phone number location lookup library based on Chinese number segment rules. Supports carrier and region identification, suitable for registration validation, user profiling, and data archiving.
 
-> Current data entries: 483,709
+[![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%208.1-blue)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-**This project has been parsed by Zread. If you need a quick overview of the project, you can click here to view it：[Understand this project](https://zread.ai/zxc7563598/php-mobile-locator)**
+> Number segments included: **483,709**
 
----
+**This project has been parsed by Zread. Click here for a quick overview: [Understand this project](https://zread.ai/zxc7563598/php-mobile-locator)**
 
-This is a mobile number attribution dataset I compiled myself. It allows you to look up the location and carrier information of Chinese mobile numbers based on segment rules. Just like my other data repositories, this one is regularly updated.
+## Features
 
-In short, it consolidates all those scattered and complicated segment details into a single, easy-to-use JSON file—making lookups fast and straightforward.
+- **Offline lookup**: No third-party API dependencies or network requests — all data is bundled locally
+- **On-demand loading**: Data is split across multiple files by number prefix, loading only what's needed per query to minimize memory usage
+- **Carrier identification**: Automatically identifies China Mobile, China Unicom, China Telecom, and other carriers
+- **Region resolution**: Pinpoints location down to province and city
+- **Regular updates**: Number segment data is updated periodically to stay current
 
-If you don’t want to deploy anything and just want to use it directly, you can 👉 [click here to use it](https://hejunjie.life/composer/mobile-locator).
+## Requirements
 
-Bulk lookup is supported.
+- PHP >= 8.1
 
 ## Installation
-
-Install via Composer:
 
 ```bash
 composer require hejunjie/mobile-locator
 ```
 
-## Included Data Files
-
-`data.json`：All data, with a total of **483,709** number segments.
-
-You can directly import the JSON file for processing. The structure is clear, so you can use it right away.
-
-## Usage
-
-I wrote a simple helper class `MobileLocator` to make it easier to access the data and perform common processing.：
+## Quick Start
 
 ```php
 <?php
+
 use Hejunjie\MobileLocator\MobileLocator;
 
-// Retrieve all data.
-$data = MobileLocator::getData();
-```
-
-Additionally, I provide some commonly used methods that you can use directly. However, if you have performance requirements, I strongly recommend caching the data and implementing it yourself.
-
-```php
-<?php
-use Hejunjie\MobileLocator\MobileLocator;
-
-// Get carrier information based on the phone number.
+// Look up a phone number's carrier and location
 $info = MobileLocator::getCarrierInfo('16601750925');
+
+print_r($info);
+// Array
+// (
+//     [province] => 上海
+//     [city]     => 上海
+//     [isp]      => 联通
+// )
 ```
 
-## Update Notes
+## API
 
-The data is regularly updated to ensure you always get the latest information. If you notice any missing or inaccurate data, feel free to open an Issue or PR to help improve it together!
+### `getCarrierInfo(string $phoneNumber, string $returnUnknown = '未知'): array`
 
-## Purpose & Motivation
+Queries carrier and location information for a given phone number.
 
-It all started with a simple need: I just wanted to check a phone number's carrier and location in a project.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$phoneNumber` | `string` | Phone number, must be numeric with at least 7 digits |
+| `$returnUnknown` | `string` | Default value returned when no match is found, defaults to `'未知'` |
 
-Most open-source libraries I found were outdated, relied on third-party APIs, had rate limits, or used legacy .dat files.
+**Return value**:
 
-So, I decided to build my own.
-
-This library is based on up-to-date number segment data, categorized by province, city, and carrier. It allows you to quickly look up phone number attribution with no external dependencies. The data is regularly updated, and the library is kept as simple and practical as possible—because honestly, I built it for my own convenience ❤️
-
-## 🔧 Additional Toolkits (Can be used independently or installed together)
-
-This project was originally extracted from [hejunjie/tools](https://github.com/zxc7563598/php-tools).
-To install all features in one go, feel free to use the all-in-one package:
-
-```bash
-composer require hejunjie/tools
+```php
+[
+    'province' => '上海',  // Province
+    'city'     => '上海',  // City
+    'isp'      => '联通',  // Carrier / ISP
+]
 ```
 
-Alternatively, feel free to install only the modules you need：
+When no match is found, all three fields return the value of `$returnUnknown`.
 
-[hejunjie/utils](https://github.com/zxc7563598/php-utils) - A lightweight and practical PHP utility library that offers a collection of commonly used helper functions for files, strings, arrays, and HTTP requests—designed to streamline development and support everyday PHP projects.
+**Exceptions**:
 
-[hejunjie/cache](https://github.com/zxc7563598/php-cache) - A layered caching system built with the decorator pattern. Supports combining memory, file, local, and remote caches to improve hit rates and simplify cache logic.
+- `InvalidArgumentException`: thrown when the phone number format is invalid
+- `Exception`: thrown when a data file is corrupted or missing
 
-[hejunjie/china-division](https://github.com/zxc7563598/php-china-division) - Regularly updated dataset of China's administrative divisions with ID-card address parsing. Distributed via Composer and versioned for use in forms, validation, and address-related features
+**Implementation**: Uses the singleton pattern internally, with query results cached in memory. Repeated queries for the same number within a single process will not trigger redundant file reads.
 
-[hejunjie/error-log](https://github.com/zxc7563598/php-error-log) - An error logging component using the Chain of Responsibility pattern. Supports multiple output channels like local files, remote APIs, and console logs—ideal for flexible and scalable logging strategies.
+### `getData(): array`
 
-[hejunjie/mobile-locator](https://github.com/zxc7563598/php-mobile-locator) - A mobile number lookup library based on Chinese carrier rules. Identifies carriers and regions, suitable for registration checks, user profiling, and data archiving.
+Returns the full dataset of all number segments.
 
-[hejunjie/address-parser](https://github.com/zxc7563598/php-address-parser) - An intelligent address parser that extracts name, phone number, ID number, region, and detailed address from unstructured text—perfect for e-commerce, logistics, and CRM systems.
+> [!WARNING]
+> The data file is approximately 49MB, and decoding can consume 200–500MB of memory. The method sets `memory_limit` to 1024M internally. For production use, consider importing the data into an external cache such as Redis via this method.
 
-[hejunjie/url-signer](https://github.com/zxc7563598/php-url-signer) - A PHP library for generating URLs with encryption and signature protection—useful for secure resource access and tamper-proof links.
+## Data Files
 
-[hejunjie/google-authenticator](https://github.com/zxc7563598/php-google-authenticator) - A PHP library for generating and verifying Time-Based One-Time Passwords (TOTP). Compatible with Google Authenticator and similar apps, with features like secret generation, QR code creation, and OTP verification.
+The project includes two types of data files:
 
-[hejunjie/simple-rule-engine](https://github.com/zxc7563598/php-simple-rule-engine) - A lightweight and flexible PHP rule engine supporting complex conditions and dynamic rule execution—ideal for business logic evaluation and data validation.
+| File | Description |
+|------|-------------|
+| `src/data.json` | Full dataset (~49MB), containing all number segments |
+| `src/carrier_data_{prefix}.json` | Sharded files split by the first 3 digits, 56 files in total |
 
-👀 All packages follow the principles of being lightweight and practical — designed to save you time and effort. They can be used individually or combined flexibly. Feel free to ⭐ star the project or open an issue anytime!
+Data format:
 
----
+```json
+{
+    "1660000": {
+        "province": "北京",
+        "city": "北京",
+        "isp": "联通"
+    }
+}
+```
 
-This library will continue to be updated with more practical features. Suggestions and feedback are always welcome — I’ll prioritize new functionality based on community input to help improve development efficiency together.
+Each segment (first 7 digits of a phone number) maps to a record containing province, city, and carrier information.
+
+## Performance Tips
+
+The `getCarrierInfo()` method provides basic on-demand loading and in-memory caching, sufficient for low-frequency lookup scenarios. For higher performance requirements (high concurrency, batch queries), we recommend:
+
+1. **Cache the full dataset in Redis**: Use `getData()` to retrieve all data and import it into Redis, then query directly from Redis
+2. **Implement your own batch lookup**: For bulk phone number queries, preload the relevant segment files and perform batch matching to avoid repeated I/O overhead
+
+## Updates & Contributing
+
+Number segment data is updated periodically. If you find missing or inaccurate data, feel free to open an Issue or PR.

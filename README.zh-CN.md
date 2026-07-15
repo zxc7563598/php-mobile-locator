@@ -1,103 +1,120 @@
 # hejunjie/mobile-locator
 
-<div align="center">
-  <a href="./README.md">English</a>｜<a href="./README.zh-CN.md">简体中文</a>
-  <hr width="50%"/>
-</div>
+[English](./README.md) ｜ 简体中文
 
-基于国内号段规则的手机号码归属地查询库，支持运营商识别与地区定位，适用于注册验证、用户画像、数据归档等场景。
+基于国内手机号段规则的归属地查询库，支持运营商和地区识别，适用于注册校验、用户画像、数据归档等场景。
 
-> 目前收录数据量：483,709
+[![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%208.1-blue)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+
+> 当前收录号段数量：**483,709**
 
 **本项目已经经由 Zread 解析完成，如果需要快速了解项目，可以点击此处进行查看：[了解本项目](https://zread.ai/zxc7563598/php-mobile-locator)**
 
----
+## 特性
 
-这是我自己整理的一份手机号码归属地数据包，基于国内号段规则来查询手机号码所属的位置和运营商信息。数据会定期更新，就像我维护的其他数据仓库一样。
+- **离线查询**：不依赖第三方 API，无需网络请求，数据全部内置
+- **按需加载**：数据按号段前缀拆分到多个文件，查询时仅加载所需文件，降低内存占用
+- **运营商识别**：自动识别中国移动、中国联通、中国电信等运营商
+- **地区定位**：精确到省、市两级地理信息
+- **数据更新**：号段数据定期更新，保持时效性
 
-简单来说，就是把那些繁琐的号段归属信息整合到一个 JSON 文件里，让你能方便地查询和使用。
+## 环境要求
 
-如果你不想要部署，只是想要进行使用，可以 👉 [点击此处进行使用](https://hejunjie.life/composer/mobile-locator)
+- PHP >= 8.1
 
-支持批量查询
-
-## 安装方式
-
-使用 Composer 安装：
+## 安装
 
 ```bash
 composer require hejunjie/mobile-locator
 ```
 
-## 包含的数据文件
-
-`data.json`：全部数据，共计 483,709 个号段
-
-都可以直接引入 JSON 文件来处理，结构比较清晰，拿来用就行。
-
-## 使用方式
-
-我写了一个简单的辅助类 MobileLocator 来方便获取数据和常用处理：
+## 快速开始
 
 ```php
 <?php
+
 use Hejunjie\MobileLocator\MobileLocator;
 
-// 获取全部数据
-$data = MobileLocator::getData();
-```
-
-另外也提供了一些常用的方法，直接可以拿来用，但如果你对性能有要求，强烈建议对数据进行缓存后自行实现
-
-```php
-<?php
-use Hejunjie\MobileLocator\MobileLocator;
-
-// 根据手机号获取运营商信息
+// 查询手机号归属地
 $info = MobileLocator::getCarrierInfo('16601750925');
+
+print_r($info);
+// Array
+// (
+//     [province] => 上海
+//     [city]     => 上海
+//     [isp]      => 联通
+// )
 ```
 
-## 更新说明
+## API
 
-数据会定期更新，保证你拿到的都是最新的信息。如果你发现有遗漏或者数据不准确，欢迎提 Issue 或 PR，一起完善！
+### `getCarrierInfo(string $phoneNumber, string $returnUnknown = '未知'): array`
 
-## 用途 & 初衷
+根据手机号查询运营商和归属地信息。
 
-最开始只是想在项目里简单查一下手机号归属地，网上的开源库很多年不更新，要么依赖第三方 API，要么接口限速，要么就得用老旧的 .dat 文件。
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `$phoneNumber` | `string` | 手机号码，需为纯数字且至少 7 位 |
+| `$returnUnknown` | `string` | 未匹配时的默认返回值，默认为 `'未知'` |
 
-我就干脆自己搞了一个：
-直接整理 最新号段数据，按省、市和运营商分类，支持通过手机号快速获取归属地信息，数据是定期更新的，库也尽量保持简单实用，毕竟我就是为了自己用得方便才写的 😅
+**返回值**：
 
-## 🔧 更多工具包（可独立使用，也可统一安装）
-
-本项目最初是从 [hejunjie/tools](https://github.com/zxc7563598/php-tools) 拆分而来，如果你想一次性安装所有功能组件，也可以使用统一包：
-
-```bash
-composer require hejunjie/tools
+```php
+[
+    'province' => '上海',  // 省
+    'city'     => '上海',  // 市
+    'isp'      => '联通',  // 运营商
+]
 ```
 
-当然你也可以按需选择安装以下功能模块：
+未匹配到时，三个字段均返回 `$returnUnknown` 的值。
 
-[hejunjie/utils](https://github.com/zxc7563598/php-utils) - 一个零碎但实用的 PHP 工具函数集合库。包含文件、字符串、数组、网络请求等常用函数的工具类集合，提升开发效率，适用于日常 PHP 项目辅助功能。
+**异常**：
 
-[hejunjie/cache](https://github.com/zxc7563598/php-cache) - 基于装饰器模式实现的多层缓存系统，支持内存、文件、本地与远程缓存组合，提升缓存命中率，简化缓存管理逻辑。
+- `InvalidArgumentException`：手机号格式不合法时抛出
+- `Exception`：数据文件损坏或不存在时抛出
 
-[hejunjie/china-division](https://github.com/zxc7563598/php-china-division) - 定期更新，全国最新省市区划分数据，身份证号码解析地址，支持 Composer 安装与版本控制，适用于表单选项、数据校验、地址解析等场景。
+**实现细节**：方法内部使用单例模式，查询结果会缓存在内存中，同一进程内重复查询相同号码不会重复读取文件。
 
-[hejunjie/error-log](https://github.com/zxc7563598/php-error-log) - 基于责任链模式的错误日志处理组件，支持多通道日志处理（如本地文件、远程 API、控制台输出），适用于复杂日志策略场景。
+### `getData(): array`
 
-[hejunjie/mobile-locator](https://github.com/zxc7563598/php-mobile-locator) - 基于国内号段规则的手机号码归属地查询库，支持运营商识别与地区定位，适用于注册验证、用户画像、数据归档等场景。
+获取全量号段数据。
 
-[hejunjie/address-parser](https://github.com/zxc7563598/php-address-parser) - 收货地址智能解析工具，支持从非结构化文本中提取姓名、手机号、身份证号、省市区、详细地址等字段，适用于电商、物流、CRM 等系统。
+> [!WARNING]
+> 数据文件约 49MB，解码后内存占用约 200-500MB，方法内部会将 `memory_limit` 设置为 1024M。如需在生产环境使用，建议先调用此方法将数据导入 Redis 等外部缓存。
 
-[hejunjie/url-signer](https://github.com/zxc7563598/php-url-signer) - 用于生成带签名和加密保护的URL链接的PHP工具包，适用于需要保护资源访问的场景
+## 数据文件
 
-[hejunjie/google-authenticator](https://github.com/zxc7563598/php-google-authenticator) - 一个用于生成和验证时间基础一次性密码（TOTP）的 PHP 包，支持 Google Authenticator 及类似应用。功能包括密钥生成、二维码创建和 OTP 验证。
+项目中包含两类数据文件：
 
-[hejunjie/simple-rule-engine](https://github.com/zxc7563598/php-simple-rule-engine) - 一个轻量、易用的 PHP 规则引擎，支持多条件组合、动态规则执行，适合业务规则判断、数据校验等场景。
+| 文件 | 说明 |
+|------|------|
+| `src/data.json` | 全量数据文件（~49MB），包含全部号段 |
+| `src/carrier_data_{前缀}.json` | 按手机号前 3 位拆分的分片文件，共 56 个 |
 
-👀 所有包都遵循「轻量实用、解放双手」的原则，能单独用，也能组合用，自由度高，欢迎 star 🌟 或提 issue。
+数据格式：
 
----
+```json
+{
+    "1660000": {
+        "province": "北京",
+        "city": "北京",
+        "isp": "联通"
+    }
+}
+```
 
-该库后续将持续更新，添加更多实用功能。欢迎大家提供建议和反馈，我会根据大家的意见实现新的功能，共同提升开发效率。
+每个号段（手机号前 7 位）对应一条记录，包含省份、城市和运营商信息。
+
+## 性能建议
+
+`getCarrierInfo()` 方法已做了基本的按需加载和内存缓存，足以应对低频查询场景。如果你有更高的性能要求（如高并发、批量查询），建议：
+
+1. **缓存全量数据到 Redis**：使用 `getData()` 获取全部数据后导入 Redis，后续查询直接从 Redis 读取
+2. **自行实现批量查询**：对大批量手机号的查询场景，可以预加载相关号段文件后批量匹配，避免单条查询时的重复 I/O
+
+## 更新与贡献
+
+号段数据会定期更新。如果你发现数据遗漏或不准确，欢迎提交 Issue 或 PR。
